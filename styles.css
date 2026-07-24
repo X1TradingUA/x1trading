@@ -30,6 +30,12 @@ html {
   scroll-behavior: smooth;
 }
 
+html,
+body {
+  overflow-x: hidden;
+  overflow-x: clip;
+}
+
 body {
   font-family: "Inter", "Segoe UI", Arial, sans-serif;
   font-size: 16px;
@@ -166,7 +172,8 @@ a {
   color: var(--gold);
 }
 
-.site-nav a.active::after {
+/* Золоте підкреслення: виростає при наведенні, постійне в активного пункту */
+.site-nav a::after {
   content: "";
   position: absolute;
   left: 14px;
@@ -175,6 +182,14 @@ a {
   height: 2px;
   background: var(--gold);
   border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.28s ease;
+}
+
+.site-nav a:hover::after,
+.site-nav a.active::after {
+  transform: scaleX(1);
 }
 
 .nav-toggle {
@@ -191,12 +206,37 @@ a {
   gap: 5px;
 }
 
+.nav-toggle {
+  transition: background 0.25s, border-color 0.25s, box-shadow 0.25s, transform 0.25s;
+}
+
+.nav-toggle:hover {
+  transform: scale(1.07);
+}
+
+.nav-toggle:active {
+  transform: scale(0.92);
+}
+
 .nav-toggle span {
   display: block;
   width: 20px;
   height: 2px;
   background: var(--navy);
-  transition: transform 0.25s, opacity 0.25s;
+  border-radius: 2px;
+  transition: transform 0.35s cubic-bezier(0.68, -0.55, 0.27, 1.55), opacity 0.25s, background 0.3s;
+}
+
+/* Відкритий стан: прозора кнопка, золотий хрестик */
+
+.nav-toggle.open {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.nav-toggle.open span {
+  background: var(--gold);
 }
 
 .nav-toggle.open span:nth-child(1) {
@@ -1097,7 +1137,7 @@ a {
 /* Тінь шапки при прокрутці */
 
 .site-header {
-  transition: box-shadow 0.25s;
+  transition: background 0.25s, box-shadow 0.25s, border-color 0.25s;
 }
 
 .site-header.scrolled {
@@ -1124,8 +1164,7 @@ a {
   pointer-events: none;
 }
 
-.page-hero::after,
-.cta::after {
+.page-hero::after {
   content: "X1";
   position: absolute;
   right: -20px;
@@ -1140,6 +1179,18 @@ a {
   user-select: none;
 }
 
+/* Лінії електропередачі у CTA-смузі */
+.cta::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: min(58%, 760px);
+  height: 100%;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='760' height='300' viewBox='0 0 760 300' fill='none' stroke='%23ffffff' stroke-opacity='0.09' stroke-width='2'><path d='M150 300 L180 80 L210 300'/><path d='M180 80 V54'/><path d='M120 120 H240'/><path d='M132 160 H228'/><path d='M158 244 L202 196 M158 196 L202 244'/><path d='M560 300 L584 120 L608 300'/><path d='M584 120 V98'/><path d='M536 150 H632'/><path d='M546 185 H622'/><path d='M120 120 Q340 194 536 150'/><path d='M240 120 Q430 198 632 150'/><path d='M132 160 Q350 228 546 185'/><path d='M228 160 Q440 232 622 185'/></svg>") no-repeat right bottom / contain;
+  pointer-events: none;
+}
+
 .page-hero .container,
 .cta .container {
   position: relative;
@@ -1151,15 +1202,6 @@ a {
 .cta {
   border-top: 3px solid;
   border-image: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold)) 1;
-}
-
-/* Градієнт на великому коді діяльності */
-
-.activity-code {
-  background: linear-gradient(120deg, var(--gold-light) 0%, var(--gold) 55%, #8f6c24 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
 }
 
 /* Іконки в картках */
@@ -1213,6 +1255,15 @@ a {
 
 .adv-card:hover::after {
   width: 100%;
+}
+
+/* Градієнт на великому коді діяльності */
+
+.activity-code {
+  background: linear-gradient(120deg, var(--gold-light) 0%, var(--gold) 55%, #8f6c24 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* Закони: золота смуга при наведенні */
@@ -1307,17 +1358,11 @@ a {
 
 /* ---------- Сторінка контактів: оновлений макет ---------- */
 
-.page-hero.tall {
-  padding-bottom: 150px;
-}
-
 .contact-strip {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 20px;
-  margin-top: -78px;
-  position: relative;
-  z-index: 5;
+  margin-top: 52px;
 }
 
 .strip-card {
@@ -1492,9 +1537,140 @@ a {
   line-height: 1.45;
 }
 
-/* Плавна поява блоків при прокрутці */
+/* ---------- Анімації ---------- */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes menu-item-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes menu-item-out {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.97);
+  }
+}
+
+/* Іконки в картках оживають при наведенні */
+
+.card-icon {
+  transition: transform 0.3s ease, background 0.3s;
+}
+
+.adv-card:hover .card-icon,
+.tile:hover .card-icon,
+.strip-card:hover .card-icon,
+.contact-item:hover .ci-icon {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+.contact-item .ci-icon {
+  transition: transform 0.3s ease;
+}
+
+/* Логотип у шапці */
+
+.brand img {
+  transition: transform 0.25s ease;
+}
+
+.brand:hover img {
+  transform: scale(1.06);
+}
+
+/* Посилання у футері зсуваються при наведенні */
+
+.footer-links a {
+  display: inline-block;
+  transition: color 0.2s, transform 0.2s;
+}
+
+.footer-links a:hover {
+  transform: translateX(5px);
+}
 
 @media (prefers-reduced-motion: no-preference) {
+  /* Кнопки: підйом і золотавий відблиск */
+
+  .button {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .button::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -80%;
+    width: 45%;
+    height: 100%;
+    background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transform: skewX(-20deg);
+    transition: left 0.55s ease;
+    pointer-events: none;
+  }
+
+  .button:hover::before {
+    left: 130%;
+  }
+
+  .button:hover {
+    transform: translateY(-2px);
+  }
+
+  .button:active {
+    transform: translateY(1px);
+  }
+
+  /* Вхідна анімація hero на головній */
+
+  .hero .eyebrow,
+  .hero h1,
+  .hero > .container > div > p,
+  .hero-actions {
+    animation: fade-up 0.7s ease both;
+  }
+
+  .hero .eyebrow { animation-delay: 0.05s; }
+  .hero h1 { animation-delay: 0.15s; }
+  .hero > .container > div > p { animation-delay: 0.28s; }
+  .hero-actions { animation-delay: 0.42s; }
+
+  /* Вхідна анімація заголовків внутрішніх сторінок */
+
+  .page-hero .breadcrumbs,
+  .page-hero h1,
+  .page-hero .container > p {
+    animation: fade-up 0.6s ease both;
+  }
+
+  .page-hero .breadcrumbs { animation-delay: 0.05s; }
+  .page-hero h1 { animation-delay: 0.14s; }
+  .page-hero .container > p { animation-delay: 0.26s; }
+
+  /* Плавна поява блоків при прокрутці */
+
   .reveal {
     opacity: 0;
     transform: translateY(26px);
@@ -1549,17 +1725,47 @@ a {
   }
 }
 
+@media (max-width: 920px) {
+  /* На середніх ширинах назва поруч з лого не вміщується разом з меню */
+  .brand-name {
+    display: none;
+  }
+}
+
 @media (max-width: 720px) {
   .section {
     padding: 60px 0;
   }
 
-  .brand-name {
-    display: none;
-  }
-
   .nav-toggle {
     display: flex;
+  }
+
+  /* Прозора шапка при прокрутці: видимими залишаються лише лого та бургер */
+  .site-header.scrolled {
+    background: transparent;
+    border-bottom-color: transparent;
+    box-shadow: none;
+  }
+
+  .site-header.scrolled .brand img {
+    background: rgba(255, 255, 255, 0.96);
+    border-radius: 10px;
+    padding: 5px 9px;
+    height: 46px;
+    box-shadow: 0 6px 18px rgba(22, 35, 63, 0.18);
+  }
+
+  .site-header.scrolled .nav-toggle {
+    background: rgba(255, 255, 255, 0.96);
+    border-color: transparent;
+    box-shadow: 0 6px 18px rgba(22, 35, 63, 0.18);
+  }
+
+  /* Відкрите меню: бургер стає прозорим і при прокрученій шапці */
+  .site-header.scrolled .nav-toggle.open {
+    background: transparent;
+    box-shadow: none;
   }
 
   .site-nav {
@@ -1567,13 +1773,11 @@ a {
     top: 100%;
     left: 0;
     right: 0;
-    background: var(--white);
-    border-bottom: 1px solid var(--line);
-    box-shadow: var(--shadow);
+    background: transparent;
     flex-direction: column;
     align-items: stretch;
-    padding: 12px 16px 18px;
-    gap: 4px;
+    padding: 10px 16px 18px;
+    gap: 10px;
     display: none;
   }
 
@@ -1581,9 +1785,48 @@ a {
     display: flex;
   }
 
-  .site-nav a.active::after {
+  /* Пункти меню — білі «кнопки» з закругленою окантовкою */
+  .site-nav a {
+    border: 1.5px solid rgba(22, 35, 63, 0.35);
+    border-radius: 12px;
+    padding: 14px 18px;
+    background: var(--white);
+    color: var(--navy);
+  }
+
+  .site-nav a:hover {
+    background: var(--bg);
+    color: var(--gold);
+  }
+
+  .site-nav a.active {
+    border-color: var(--gold);
+    color: var(--gold);
+  }
+
+  .site-nav a::after {
     display: none;
   }
+
+  /* Хвильова поява пунктів меню */
+  .site-nav.open a {
+    animation: menu-item-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  .site-nav.open a:nth-child(1) { animation-delay: 0.04s; }
+  .site-nav.open a:nth-child(2) { animation-delay: 0.1s; }
+  .site-nav.open a:nth-child(3) { animation-delay: 0.16s; }
+  .site-nav.open a:nth-child(4) { animation-delay: 0.22s; }
+
+  /* Закриття: пункти зникають знизу вгору */
+  .site-nav.open.closing a {
+    animation: menu-item-out 0.25s ease both;
+  }
+
+  .site-nav.open.closing a:nth-child(1) { animation-delay: 0.12s; }
+  .site-nav.open.closing a:nth-child(2) { animation-delay: 0.08s; }
+  .site-nav.open.closing a:nth-child(3) { animation-delay: 0.04s; }
+  .site-nav.open.closing a:nth-child(4) { animation-delay: 0s; }
 
   .cards-3,
   .tiles,
@@ -1605,11 +1848,7 @@ a {
 
   .contact-strip {
     grid-template-columns: 1fr;
-    margin-top: -50px;
-  }
-
-  .page-hero.tall {
-    padding-bottom: 110px;
+    margin-top: 36px;
   }
 
   .info-panel {

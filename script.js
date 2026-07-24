@@ -4,10 +4,30 @@ document.addEventListener("DOMContentLoaded", function () {
   var nav = document.querySelector(".site-nav");
 
   if (toggle && nav) {
+    var headerEl = document.querySelector(".site-header");
+    var closeTimer = null;
+
     toggle.addEventListener("click", function () {
-      var isOpen = nav.classList.toggle("open");
-      toggle.classList.toggle("open", isOpen);
-      toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      var isOpen = nav.classList.contains("open") && !nav.classList.contains("closing");
+
+      if (!isOpen) {
+        // Відкриття
+        clearTimeout(closeTimer);
+        nav.classList.remove("closing");
+        nav.classList.add("open");
+        toggle.classList.add("open");
+        toggle.setAttribute("aria-expanded", "true");
+        if (headerEl) headerEl.classList.add("menu-open");
+      } else {
+        // Закриття: спочатку анімація зникнення пунктів, потім ховаємо список
+        nav.classList.add("closing");
+        toggle.classList.remove("open");
+        toggle.setAttribute("aria-expanded", "false");
+        if (headerEl) headerEl.classList.remove("menu-open");
+        closeTimer = setTimeout(function () {
+          nav.classList.remove("open", "closing");
+        }, 400);
+      }
     });
   }
 
